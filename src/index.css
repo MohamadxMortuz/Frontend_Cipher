@@ -290,6 +290,7 @@ body {
   margin-bottom: 32px;
   font-size: 20px;
   font-weight: 500;
+  margin-top: 0;
 }
 
 .auth-form {
@@ -307,11 +308,15 @@ body {
   display: flex;
   flex-direction: column;
   gap: 16px;
-  align-items: center;
+  align-items: stretch;
 }
 
 .btn-block {
   width: 100%;
+  text-align: center;
+  justify-content: center;
+  display: flex;
+  align-items: center;
 }
 
 .auth-error {
