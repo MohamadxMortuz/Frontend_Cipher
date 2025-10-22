@@ -341,6 +341,36 @@ body {
   text-decoration: underline;
 }
 
+.auth-subtitle {
+  color: var(--muted);
+  text-align: center;
+  margin: 0 0 24px 0;
+  font-size: 14px;
+}
+
+.form-group label {
+  color: var(--text-color);
+  font-size: 14px;
+  font-weight: 500;
+  margin-bottom: 6px;
+  display: block;
+}
+
+.input-help {
+  color: var(--muted);
+  font-size: 12px;
+  margin-top: 4px;
+  display: block;
+}
+
+.btn-primary {
+  width: 100%;
+  text-align: center;
+  justify-content: center;
+  display: flex;
+  align-items: center;
+}
+
 .spinner-small {
   width: 20px;
   height: 20px;

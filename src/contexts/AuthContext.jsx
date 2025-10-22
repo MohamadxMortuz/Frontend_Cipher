@@ -16,14 +16,17 @@ export function AuthProvider({ children }) {
   useEffect(() => {
     const init = async () => {
       try {
+        // Configure axios defaults
+        axios.defaults.headers.common['Content-Type'] = 'application/json';
+        axios.defaults.timeout = 30000;
+        axios.defaults.withCredentials = false;
+        
         // Check for stored token
         const token = localStorage.getItem('cipherstudio:token');
-        // set axios baseURL from saved backend
-        const backend = localStorage.getItem('cipherstudio:backend') || 'http://localhost:4000';
+        const backend = localStorage.getItem('cipherstudio:backend') || import.meta.env.VITE_API_URL || 'https://backend-cipher.onrender.com';
         axios.defaults.baseURL = backend;
         
         if (token) {
-          // Set the token in axios headers
           axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
           await validateToken(token);
         }
@@ -39,12 +42,14 @@ export function AuthProvider({ children }) {
 
   const validateToken = async (token) => {
     try {
-      const response = await axios.get((axios.defaults.baseURL||'') + '/api/auth/validate', {
+      const backendUrl = localStorage.getItem('cipherstudio:backend') || import.meta.env.VITE_API_URL || 'https://backend-cipher.onrender.com';
+      const response = await axios.get(`${backendUrl}/api/auth/validate`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setUser(response.data.user);
       axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
     } catch (error) {
+      console.error('Token validation error:', error);
       localStorage.removeItem('cipherstudio:token');
     } finally {
       setLoading(false);
@@ -55,14 +60,49 @@ export function AuthProvider({ children }) {
     try {
       setAuthLoading(true);
       setAuthError('');
-      const response = await axios.post((axios.defaults.baseURL||'') + '/api/auth/login', { email, password });
-      const { token, user: userData } = response.data;
-      localStorage.setItem('cipherstudio:token', token);
-      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-      setUser(userData);
-      return { success: true };
+      
+      // Try multiple backend URLs
+      const backendUrls = [
+        localStorage.getItem('cipherstudio:backend'),
+        import.meta.env.VITE_API_URL,
+        'https://backend-cipher.onrender.com',
+        'http://localhost:4000'
+      ].filter(Boolean);
+      
+      let lastError;
+      for (const backendUrl of backendUrls) {
+        try {
+          console.log('Trying login to:', `${backendUrl}/api/auth/login`);
+          const response = await axios.post(`${backendUrl}/api/auth/login`, 
+            { email, password }, 
+            {
+              headers: { 'Content-Type': 'application/json' },
+              timeout: 10000
+            }
+          );
+          
+          const { token, user: userData } = response.data;
+          localStorage.setItem('cipherstudio:token', token);
+          localStorage.setItem('cipherstudio:backend', backendUrl);
+          axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+          setUser(userData);
+          return { success: true };
+        } catch (err) {
+          console.log(`Failed with ${backendUrl}:`, err.message);
+          lastError = err;
+          continue;
+        }
+      }
+      
+      throw lastError;
     } catch (error) {
-      const errorMsg = error.response?.data?.message || 'Login failed';
+      console.error('All login attempts failed:', error);
+      let errorMsg = 'Network error - backend unavailable';
+      if (error.response?.data?.message) {
+        errorMsg = error.response.data.message;
+      } else if (error.code === 'ECONNABORTED') {
+        errorMsg = 'Request timeout - server may be sleeping';
+      }
       setAuthError(errorMsg);
       return { success: false, error: errorMsg };
     } finally {
@@ -74,10 +114,16 @@ export function AuthProvider({ children }) {
     try {
       setAuthLoading(true);
       setAuthError('');
-      const response = await axios.post((axios.defaults.baseURL||'') + '/api/auth/register', { 
+      const backendUrl = localStorage.getItem('cipherstudio:backend') || import.meta.env.VITE_API_URL || 'https://backend-cipher.onrender.com';
+      console.log('Attempting register to:', `${backendUrl}/api/auth/register`);
+      const response = await axios.post(`${backendUrl}/api/auth/register`, { 
         email, 
         password,
         name 
+      }, {
+        headers: {
+          'Content-Type': 'application/json'
+        }
       });
       const { token, user: userData } = response.data;
       localStorage.setItem('cipherstudio:token', token);
@@ -85,7 +131,8 @@ export function AuthProvider({ children }) {
       setUser(userData);
       return { success: true };
     } catch (error) {
-      const errorMsg = error.response?.data?.message || 'Registration failed';
+      console.error('Register error:', error);
+      const errorMsg = error.response?.data?.message || error.message || 'Registration failed';
       setAuthError(errorMsg);
       return { success: false, error: errorMsg };
     } finally {
