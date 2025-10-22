@@ -127,48 +127,50 @@ export default function App(){
               <SettingsPanel isOpen={isSettingsOpen} onClose={() => setIsSettingsOpen(false)} />
               <AuthModal isOpen={isAuthOpen} onClose={() => setIsAuthOpen(false)} />
 
-              <div className="toolbar">
-                <h1>CipherStudio</h1>
+              <div className="toolbar d-flex align-items-center px-3">
+                <h1 className="mb-0 me-4">CipherStudio</h1>
 
-                <div className="toolbar-section">
-                  <button className="btn btn-success" onClick={saveProject}>
+                <div className="d-flex align-items-center gap-3">
+                  <button className="btn btn-success btn-sm" onClick={saveProject}>
                     💾 Save Project
                   </button>
                   <input 
-                    className="input" 
+                    className="form-control" 
                     type="text" 
                     placeholder="Enter Project ID to load..." 
+                    style={{width: '280px'}}
                     onKeyDown={(e)=>{ if(e.key==='Enter') loadProject(e.target.value); }} 
                   />
                 </div>
 
-                <div className="toolbar-right">
-                  <div className="toolbar-section">
-                    <label style={{color:'var(--muted)', fontSize:'14px', fontWeight:'500'}}>Backend:</label>
+                <div className="ms-auto d-flex align-items-center gap-3">
+                  <div className="d-flex align-items-center gap-2">
+                    <label className="text-muted small fw-medium mb-0">Backend:</label>
                     <input 
-                      className="input" 
+                      className="form-control form-control-sm" 
                       value={backendUrl} 
                       onChange={(e)=>setBackendUrl(e.target.value)} 
                       placeholder="Backend URL"
+                      style={{width: '240px'}}
                     />
                   </div>
 
-                  <button className="btn-icon" onClick={toggleTheme} title="Toggle theme">
+                  <button className="btn btn-icon rounded" onClick={toggleTheme} title="Toggle theme">
                     {isDarkTheme? '🌞' : '🌙'}
                   </button>
-                  <button className="btn-icon" onClick={()=>setIsSettingsOpen(true)} title="Settings">
+                  <button className="btn btn-icon rounded" onClick={()=>setIsSettingsOpen(true)} title="Settings">
                     ⚙️
                   </button>
                   <ProfileMenu />
                 </div>
               </div>
 
-              <div className="main">
+              <div className="main d-flex">
                 <div className="file-explorer">
                   <FileExplorer files={files} setFiles={setFiles} activeFile={activeFile} setActiveFile={setActiveFile} />
                 </div>
-                <div className="editor-pane">
-                  <Suspense fallback={<div className="editor-placeholder"><div className="spinner"/></div>}>
+                <div className="editor-pane flex-fill d-flex flex-column">
+                  <Suspense fallback={<div className="editor-placeholder d-flex align-items-center justify-content-center h-100"><div className="spinner"/></div>}>
                     <EditorPane files={files} setFiles={setFiles} activeFile={activeFile} setActiveFile={setActiveFile} projectId={projectId} />
                   </Suspense>
                 </div>

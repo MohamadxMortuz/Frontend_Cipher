@@ -55,39 +55,36 @@ export default function FileExplorer({files, setFiles, activeFile, setActiveFile
         <h3 className="file-explorer-title">Explorer</h3>
       </div>
 
-      <div style={{padding:'0 16px 12px 16px'}}>
+      <div className="px-3 pb-3">
         <button 
-          className="btn btn-primary" 
+          className="btn btn-primary btn-sm w-100" 
           onClick={() => setIsCreatingFile(true)}
-          style={{width:'100%', fontSize:'13px'}}
         >
           ➕ New File
         </button>
       </div>
 
       {isCreatingFile && (
-        <div style={{padding:'0 16px 16px 16px', display:'flex', flexDirection:'column', gap:8}}>
+        <div className="px-3 pb-3">
           <input 
-            className="input" 
+            className="form-control form-control-sm mb-2" 
             type="text" 
             value={newFileName} 
             onChange={(e)=>setNewFileName(e.target.value)} 
             placeholder="filename.js" 
-            style={{fontSize:'13px'}}
             onKeyDown={(e)=>{ 
               if(e.key==='Enter') handleCreateFile(); 
               if(e.key==='Escape'){ setIsCreatingFile(false); setNewFileName(''); } 
             }} 
             autoFocus
           />
-          <div style={{display:'flex', gap:6}}>
-            <button className="btn btn-success" onClick={handleCreateFile} style={{flex:1, fontSize:'12px'}}>
+          <div className="d-flex gap-2">
+            <button className="btn btn-success btn-sm flex-fill" onClick={handleCreateFile}>
               ✓ Create
             </button>
             <button 
-              className="btn" 
+              className="btn btn-secondary btn-sm" 
               onClick={() => {setIsCreatingFile(false); setNewFileName('');}}
-              style={{background:'var(--muted)', color:'white', fontSize:'12px'}}
             >
               ✕
             </button>
@@ -99,7 +96,7 @@ export default function FileExplorer({files, setFiles, activeFile, setActiveFile
         {keys.map(k => (
           <div 
             key={k} 
-            className={`file-item ${k===activeFile? 'selected':''}`} 
+            className={`file-item d-flex align-items-center rounded ${k===activeFile? 'selected':''}`} 
             onClick={(e) => {
               e.preventDefault();
               e.stopPropagation();
@@ -107,29 +104,26 @@ export default function FileExplorer({files, setFiles, activeFile, setActiveFile
             }}
             style={{cursor: 'pointer'}}
           >
-            <span style={{fontSize:'16px', marginRight:'2px'}}>{getFileIcon(k)}</span>
-            <div style={{flex:1, fontSize:'13px'}}>{k}</div>
-            <div className="file-controls">
-              <button 
-                className="btn-icon" 
-                onClick={(e)=>{ 
-                  e.preventDefault();
-                  e.stopPropagation(); 
-                  handleDeleteFile(k); 
-                }}
-                style={{
-                  width:'20px', 
-                  height:'20px', 
-                  fontSize:'10px', 
-                  background:'transparent',
-                  color:'var(--muted)',
-                  padding:'0'
-                }}
-                title="Delete file"
-              >
-                🗑️
-              </button>
-            </div>
+            <span className="me-2">{getFileIcon(k)}</span>
+            <div className="flex-fill small">{k}</div>
+            <button 
+              className="btn btn-sm p-0" 
+              onClick={(e)=>{ 
+                e.preventDefault();
+                e.stopPropagation(); 
+                handleDeleteFile(k); 
+              }}
+              style={{
+                width:'20px', 
+                height:'20px', 
+                background:'transparent',
+                color:'var(--muted)',
+                border: 'none'
+              }}
+              title="Delete file"
+            >
+              🗑️
+            </button>
           </div>
         ))}
       </div>

@@ -29,62 +29,29 @@ export default function ProfileMenu(){
   return (
     <div style={{position:'relative'}} ref={ref}>
       <button 
-        className="btn-icon" 
+        className="btn p-0" 
         onClick={()=>setOpen(v=>!v)} 
         title="Profile" 
         aria-label="Profile"
-        style={{
-          background: open ? 'rgba(49, 130, 206, 0.1)' : 'transparent',
-          border: '2px solid transparent',
-          borderColor: open ? 'var(--btn-primary)' : 'transparent'
-        }}
       >
-        <span style={{
-          display:'inline-block',
-          width:32,
-          height:32,
-          lineHeight:'32px',
-          borderRadius:'50%',
-          background:'var(--btn-primary)',
-          color:'#fff',
-          textAlign:'center',
-          fontWeight:600,
-          fontSize:'14px',
-          boxShadow:'var(--shadow-sm)'
-        }}>
+        <div className="profile-avatar">
           {initials}
-        </span>
+        </div>
       </button>
       {open && (
         <div className="profile-menu">
-          <div style={{
-            padding:'16px',
-            borderBottom:'1px solid var(--border-color)',
-            position:'relative',
-            zIndex:1
-          }}>
-            <div style={{
-              fontWeight:600,
-              fontSize:'15px',
-              color:'var(--text-color)',
-              marginBottom:'4px'
-            }}>
+          <div className="p-3 border-bottom">
+            <div className="fw-semibold mb-1" style={{color:'var(--text-color)'}}>
               {user?.name || 'User'}
             </div>
-            <div style={{
-              fontSize:'13px',
-              color:'var(--muted)'
-            }}>
+            <div className="small text-muted">
               {user?.email || ''}
             </div>
           </div>
-          <div style={{position:'relative', zIndex:1}}>
+          <div>
             <button 
-              className="btn" 
+              className="btn text-danger" 
               onClick={()=>{ logout(); setOpen(false); }}
-              style={{
-                color:'var(--btn-danger)'
-              }}
             >
               🚪 Sign Out
             </button>
