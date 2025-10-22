@@ -37,7 +37,7 @@ export default function App(){
   });
   const [files, setFiles] = useState(DEFAULT_FILES);
   const [activeFile, setActiveFile] = useState("App.jsx");
-  const [backendUrl, setBackendUrl] = useState("http://localhost:4000");
+  const [backendUrl, setBackendUrl] = useState(import.meta.env.VITE_API_URL || "https://backend-cipher.onrender.com");
   useEffect(()=>{
     const saved = localStorage.getItem('cipherstudio:backend');
     if(saved) setBackendUrl(saved);
