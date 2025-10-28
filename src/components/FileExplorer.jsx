@@ -22,10 +22,17 @@ export default function FileExplorer({files, setFiles, activeFile, setActiveFile
       ? '{}'
       : '// Write your code here';
     
-    setFiles({
+    const updatedFiles = {
       ...files,
       [fileName]: defaultContent
-    });
+    };
+    
+    setFiles(updatedFiles);
+    // Update localStorage immediately
+    const projectId = localStorage.getItem('cipherstudio:activeProjectId');
+    if (projectId) {
+      localStorage.setItem("cipherstudio:" + projectId, JSON.stringify(updatedFiles));
+    }
     setActiveFile(fileName);
     setNewFileName("");
     setIsCreatingFile(false);
@@ -37,6 +44,11 @@ export default function FileExplorer({files, setFiles, activeFile, setActiveFile
       const copy = {...files};
       delete copy[k];
       setFiles(copy);
+      // Update localStorage immediately
+      const projectId = localStorage.getItem('cipherstudio:activeProjectId');
+      if (projectId) {
+        localStorage.setItem("cipherstudio:" + projectId, JSON.stringify(copy));
+      }
       if (activeFile === k) setActiveFile(Object.keys(copy)[0] || "");
     }
   };
